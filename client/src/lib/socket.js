@@ -1,0 +1,32 @@
+import { io } from "socket.io-client";
+import store from "../Store/Store";
+import { setOnlineUsers } from "../Store/slices/authSlice";
+
+let socket;
+
+export const connectSocket = (userId) => {
+  if (!userId) return;
+
+  socket = io(
+    import.meta.env.MODE === "development" ? "http://localhost:5000" : "/",
+    {
+      query: {userId},    
+    }
+  );
+
+  socket.on("getOnlineUsers", (users) => {
+    console.log("Online users from server:", users);
+    store.dispatch(setOnlineUsers(users));
+  });
+
+  return socket;
+};
+
+export const getSocket = () => socket;
+
+export const disconnectSocket = () => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+};
