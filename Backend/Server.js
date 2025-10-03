@@ -17,8 +17,5 @@ initSocket(server);
 
 
 server.listen(process.env.PORT, () => {
-  console.log(
-    `✅ Server is running on port ${process.env.PORT} in ${process.env.NODE_ENV} mode`
-  );
+    console.log(`Server is working on http://localhost:${process.env.Node_ENV}`);
 });
-
