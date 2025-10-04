@@ -1,7 +1,7 @@
 import { Mail, Lock, MessageSquare, Eye, EyeOff, Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link  } from "react-router-dom"; 
 import { login } from "../Store/slices/authSlice";
 import AuthImagePattern from '../components/AuthImagePattern';
 
@@ -10,7 +10,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ Email: "", password: "" });
   const { isLoggingIn, authUser } = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  const navigate = useNavigate();   // ✅ FIXED: missing useNavigate hook
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,9 +19,8 @@ const Login = () => {
 
   useEffect(() => {
     if (authUser) {
-      navigate("/");   // ✅ ab turant redirect hoga
     }
-  }, [authUser, navigate]);  // ✅ navigate ko dependency may include karo
+  }, [authUser]); 
 
   return (
     <div className='min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white'>
