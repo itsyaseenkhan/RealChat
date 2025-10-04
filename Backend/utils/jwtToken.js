@@ -6,13 +6,12 @@ export const generateJWTToken = async(user,message, statusCode, res) =>{
     })
      const cookieExpireDays = Number(process.env.COOKIE_EXPIRE);
      
-    return res.status(statusCode).cookie("token", token, {
-        maxAge: cookieExpireDays * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: "none",
-        secure: process.env.NODE_ENV === "production",
-
-    })
+    return res.cookie("token", token, {
+    maxAge: cookieExpireDays * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+})
     .json({
         success: true,
         message,
