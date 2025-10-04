@@ -16,6 +16,8 @@ const server = http.createServer(app);
 initSocket(server);
 
 
-server.listen(process.env.PORT, () => {
-    console.log(`Server is working on http://localhost:${process.env.Node_ENV}`);
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+    console.log(`✅ Server is working on port: ${PORT} in ${process.env.NODE_ENV} mode`);
 });
