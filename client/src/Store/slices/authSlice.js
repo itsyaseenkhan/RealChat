@@ -3,7 +3,7 @@ import { axiosInstance } from "../../lib/axios";
 import { connectSocket, disconnectSocket } from "../../lib/socket.js";
 import { toast } from "react-toastify";
 
-// ✅ Current logged in user
+
 export const getUser = createAsyncThunk("auth/me", async (_, ThunkAPI) => {
   try {
     const res = await axiosInstance.get("/user/me", {
@@ -17,7 +17,7 @@ export const getUser = createAsyncThunk("auth/me", async (_, ThunkAPI) => {
   }
 });
 
-// ✅ LOGIN
+
 export const login = createAsyncThunk("/user/Sign-in", async (data, ThunkAPI) => {
   try {
     const res = await axiosInstance.post("/user/Sign-in", data, {
