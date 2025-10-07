@@ -4,12 +4,13 @@ const userSocketMap = {};
 let io;
 
 export function initSocket(server) {
-  io = new Server(server, {
-    cors: {
-      origin: process.env.FRONTEND_URL,
-      credentials: true,
-    },
-  });
+ io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  },
+});
+
 
   io.on("connection", (socket) => {
     console.log("✅ A user connected:", socket.id);
