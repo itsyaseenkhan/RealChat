@@ -7,15 +7,17 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
 
   const cookieExpireDays = Number(process.env.COOKIE_EXPIRE);
 
-return res.cookie("token", token, {
-    maxAge: cookieExpireDays * 24 * 60 * 60 * 1000,
-    httpOnly: true,         // JS se access nahi ho sakta, safe
-    secure: process.env.NODE_ENV === "production", // HTTPS ke liye true
-    sameSite: "none",       // cross-site request ke liye must
-})
-.json({
+return res
+  .cookie("token", token, {
+    maxAge: cookieExpireDays * 24 * 60 * 60 * 1000, 
+    httpOnly: true, // safe cookie
+    secure: process.env.NODE_ENV === "production", 
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
+  })
+  .status(statusCode) // ← status code add کریں
+  .json({
     success: true,
     message,
     token,
-});
-};
+  });
+}

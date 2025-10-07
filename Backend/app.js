@@ -14,10 +14,11 @@ app.use(express.json());
 config({ path: "./config/config.env"});
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: [process.env.FRONTEND_URL, "http://localhost:5000"],
   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true, 
+  credentials: true,
 }));
+
 
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
