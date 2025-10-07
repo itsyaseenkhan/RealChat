@@ -8,7 +8,7 @@ export const connectSocket = (userId) => {
   if (!userId) return;
 
   socket = io(
-    import.meta.env.MODE === "development" ? "http://localhost:5000" : "https://realchat-backends-9v8u.onrender.com",
+    import.meta.env.MODE === "development" ? "https://realchat-backends-9v8u.onrender.com" : "/",
     {
       query: {userId},    
     }
