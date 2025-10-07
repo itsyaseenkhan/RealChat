@@ -15,8 +15,15 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
   secure: process.env.NODE_ENV === "production", // Render میں true
   sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict",
   maxAge: process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000, // 3 دن
-});
+})
 
+.status(statusCode) 
+.json({
+  success: true,
+  message,
+  token,
+});
+}
 // return res
 //   .cookie("token", token, {
 //     maxAge: cookieExpireDays * 24 * 60 * 60 * 1000, 
@@ -24,13 +31,6 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
 //     secure:  true,
 //     sameSite: "none", 
 //   })
-  .status(statusCode) 
-  .json({
-    success: true,
-    message,
-    token,
-  });
-}
 
 
 // process.env.NODE_ENV === "production", 
