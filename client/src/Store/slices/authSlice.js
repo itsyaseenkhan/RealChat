@@ -40,10 +40,7 @@ export const Signup = createAsyncThunk("/user/Sign-up", async (data, ThunkAPI) =
       withCredentials: true,
     });
     toast.success("Account Created Successfully");
-
-    // 🔥 force reload user info after signup
     ThunkAPI.dispatch(getUser());
-
     return res.data;
   } catch (error) {
     toast.error(error.response?.data?.message || "Signup failed");

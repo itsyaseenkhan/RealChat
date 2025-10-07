@@ -11,8 +11,8 @@ return res
   .cookie("token", token, {
     maxAge: cookieExpireDays * 24 * 60 * 60 * 1000, 
     httpOnly: true, // safe cookie
-    secure: process.env.NODE_ENV === "production", 
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
+    secure:  true,
+    sameSite: "none", 
   })
   .status(statusCode) // ← status code add کریں
   .json({
@@ -21,3 +21,7 @@ return res
     token,
   });
 }
+
+
+// process.env.NODE_ENV === "production", 
+// process.env.NODE_ENV === "production" ? "none" : "lax"
