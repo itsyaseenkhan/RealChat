@@ -1,8 +1,10 @@
-// utils/generateJWTToken.js (ya jahan bhi yeh function hai)
-
 import jwt from "jsonwebtoken";
+import { User } from "../models/userModel.js";
+import { catchAsyncError } from "./catchAsyncError.middleware.js";
 
-export const generateJWTToken = async (user, message, statusCode, res) => { const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+
+export const generateJWTToken = async (user, message, statusCode, res) =>
+   { const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
  expiresIn: process.env.JWT_EXPIRE,
  });
 
