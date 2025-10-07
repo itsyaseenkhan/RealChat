@@ -10,11 +10,11 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
 return res
   .cookie("token", token, {
     maxAge: cookieExpireDays * 24 * 60 * 60 * 1000, 
-    httpOnly: true, // safe cookie
+    httpOnly: true,
     secure:  true,
     sameSite: "none", 
   })
-  .status(statusCode) // ← status code add کریں
+  .status(statusCode) 
   .json({
     success: true,
     message,
