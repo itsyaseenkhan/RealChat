@@ -24,10 +24,8 @@ export const login = createAsyncThunk("/user/Sign-in", async (data, ThunkAPI) =>
       withCredentials: true,
     });
     toast.success("Logged in Successfully");
-
-    // 🔥 force reload user info after login
+    await new Promise((resolve) => setTimeout(resolve, 300));
     ThunkAPI.dispatch(getUser());
-
     return res.data;
   } catch (error) {
     toast.error(error.response?.data?.message || "Login failed");
