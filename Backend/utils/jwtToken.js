@@ -7,16 +7,14 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
 
   const cookieExpireDays = Number(process.env.COOKIE_EXPIRE);
 
-
-
   return res
-  .cookie("token", token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite:"none",
-  maxAge: process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000, // 3 دن
-})
+    .cookie("token", token, {
+       maxAge: cookieExpireDays * 24 * 60 * 60 * 1000,     httpOnly: true,
+      secure:  true,
+      sameSite: "none", 
+     })
 
+ 
 .status(statusCode) 
 .json({
   success: true,
@@ -24,12 +22,6 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
   token,
 });
 }
-// return res
-//   .cookie("token", token, {
-//      maxAge: cookieExpireDays * 24 * 60 * 60 * 1000,     httpOnly: true,
-//     secure:  true,
-//     sameSite: "none", 
-//    })
 
 
 // process.env.NODE_ENV === "production", 
