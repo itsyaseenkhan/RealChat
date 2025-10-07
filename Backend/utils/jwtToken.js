@@ -12,8 +12,8 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
   return res
   .cookie("token", token, {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production", // Render میں true
-  sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict",
+  secure: process.env.NODE_ENV === "production",
+  sameSite:"none",
   maxAge: process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000, // 3 دن
 })
 
