@@ -7,8 +7,7 @@ let socket;
 export const connectSocket = (userId) => {
   if (!userId) return;
 
-  socket = io(
-    import.meta.env.MODE === "development" ? "https://realchat-backends-9v8u.onrender.com" : "/",
+  socket = io("https://realchat-backends-9v8u.onrender.com" ,
     {
       query: {userId},    
     }
