@@ -43,64 +43,7 @@ export const getMessage = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// // ✅ Send a new message
-// export const sendMessage = catchAsyncError(async (req, res, next) => {
-//   const { text } = req.body;
-//   const media = req?.files?.media;
-//   const { id: receiverId } = req.params;
-//   const senderId = req.user._id;
 
-//   if (!mongoose.isValidObjectId(receiverId)) {
-//     return res.status(400).json({ success: false, message: "Invalid receiver id format." });
-//   }
-
-//   const receiver = await User.findById(receiverId);
-//   if (!receiver) {
-//     return res.status(404).json({ success: false, message: "Receiver Id is not valid." });
-//   }
-
-//   const sanitizedText = text?.trim() || "";
-//   if (!sanitizedText && !media) {
-//     return res.status(400).json({ success: false, message: "Cannot send empty message." });
-//   }
-
-//   let mediaUrl = "";
-//   if (media) {
-//     try {
-//       const uploadResponse = await cloudinary.uploader.upload(media.tempFilePath, {
-//         resource_type: "auto",
-//         folder: "chatapp/media",
-//         transformation: [
-//           { width: 1000, height: 1000, crop: "limit" },
-//           { quality: "auto" },
-//           { fetch_format: "auto" },
-//         ],
-//       });
-//       mediaUrl = uploadResponse.secure_url;
-//     } catch (error) {
-//       console.error("Cloudinary Upload Error:", error);
-//       return res.status(500).json({
-//         success: false,
-//         message: "Failed to upload media. Please try again.",
-//       });
-//     }
-//   }
-
-//   const newMessage = await Message.create({
-//     sender: senderId,
-//     receiver: receiverId,
-//     text: sanitizedText,
-//     media: mediaUrl,
-//   });
-
-//   // ✅ Emit message via socket
-//   const receiverSocketId = getReceiverSocketId(receiverId);
-//   if (receiverSocketId) {
-//     io.to(receiverSocketId).emit("newMessage", newMessage);
-//   }
-
-//   res.status(201).json(newMessage);
-// });
 export const sendMessage = catchAsyncError(async (req, res, next) => {
   const { text, duration } = req.body;
   const media = req?.files?.media;
@@ -130,28 +73,37 @@ export const sendMessage = catchAsyncError(async (req, res, next) => {
   // ✅ Handle media upload
   if (media) {
     try {
-      // 🆕 MimeType check
+      if (!media.mimetype) {
+        return res.status(400).json({ success: false, message: "Invalid media file." });
+      }
+
       if (media.mimetype.startsWith("image/")) mediaType = "image";
       else if (media.mimetype.startsWith("video/")) mediaType = "video";
       else if (media.mimetype.startsWith("audio/")) mediaType = "audio";
+      else return res.status(400).json({ success: false, message: "Unsupported media type." });
 
-      const uploadResponse = await cloudinary.uploader.upload(media.tempFilePath, {
-        // ⚡ Cloudinary me audio ko "video" type me upload karna padta hai
-        resource_type: mediaType === "audio" ? "video" : "auto",
+      const uploadOptions = {
+        resource_type: mediaType === "audio" ? "video" : "auto", // 👈 audio fix
         folder: "chatapp/media",
-        transformation: [
+      };
+
+      // only apply transformations for image/video
+      if (mediaType === "image" || mediaType === "video") {
+        uploadOptions.transformation = [
           { width: 1000, height: 1000, crop: "limit" },
           { quality: "auto" },
           { fetch_format: "auto" },
-        ],
-      });
+        ];
+      }
 
+      const uploadResponse = await cloudinary.uploader.upload(media.tempFilePath, uploadOptions);
       mediaUrl = uploadResponse.secure_url;
     } catch (error) {
-      console.error("Cloudinary Upload Error:", error);
+      console.error("Cloudinary Upload Error:", error.message);
       return res.status(500).json({
         success: false,
         message: "Failed to upload media. Please try again.",
+        error: error.message,
       });
     }
   }
@@ -163,7 +115,7 @@ export const sendMessage = catchAsyncError(async (req, res, next) => {
     text: sanitizedText,
     media: mediaUrl,
     mediaType: mediaType || null,
-    duration: duration ? Number(duration) : null, // 🆕 voice note duration
+    duration: duration ? Number(duration) : null, // for voice note
   });
 
   // ✅ Emit real-time message via Socket.io
@@ -172,7 +124,11 @@ export const sendMessage = catchAsyncError(async (req, res, next) => {
     io.to(receiverSocketId).emit("newMessage", newMessage);
   }
 
-  res.status(201).json(newMessage);
+  return res.status(201).json({
+    success: true,
+    message: "Message sent successfully",
+    data: newMessage,
+  });
 });
 
 export const ClearChat = catchAsyncError(async (req, res, next) => {
