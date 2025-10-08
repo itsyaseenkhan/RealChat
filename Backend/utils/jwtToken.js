@@ -12,7 +12,7 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
         maxAge: cookieExpireDays * 24 * 60 * 60 * 1000,
         httpOnly: true,
         secure: process.env.NODE_ENV !== "development" ? false : true,
-        sameSite: "strict",
+        sameSite: "None",
 
      })
 
