@@ -24,7 +24,6 @@ export const login = createAsyncThunk("/user/Sign-in", async (data, ThunkAPI) =>
       withCredentials: true,
     });
     toast.success("Logged in Successfully");
-    await new Promise((resolve) => setTimeout(resolve, 300));
     ThunkAPI.dispatch(getUser());
     return res.data;
   } catch (error) {
