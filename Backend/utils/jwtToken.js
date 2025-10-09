@@ -18,7 +18,7 @@ export const generateJWTToken = async (user, message, statusCode, res) => {
      .status(statusCode) 
        .json({
        success: true,
-      message,
+       message,
        token,
 });
 }
