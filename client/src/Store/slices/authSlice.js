@@ -4,7 +4,7 @@ import { connectSocket, disconnectSocket } from "../../lib/socket.js";
 import { toast } from "react-toastify";
 
 
-export const getUser = createAsyncThunk("auth/me", async (_, ThunkAPI) => {
+export const getUser = createAsyncThunk("user/me", async (_, ThunkAPI) => {
   try {
     const res = await axiosInstance.get("/user/me", {
       withCredentials: true,
@@ -48,7 +48,7 @@ export const Signup = createAsyncThunk("/user/Sign-up", async (data, ThunkAPI) =
 });
 
 // ✅ LOGOUT
-export const logout = createAsyncThunk("auth/Sign-out", async (_, ThunkAPI) => {
+export const logout = createAsyncThunk("user/Sign-out", async (_, ThunkAPI) => {
   try {
     await axiosInstance.get("/user/Sign-out", { withCredentials: true });
     disconnectSocket();

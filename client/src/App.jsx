@@ -17,7 +17,6 @@ const App = () => {
 
   useEffect(() => {
     dispatch(getUser());
-    console.log("Fetching User");
   }, [dispatch]);
 
   useEffect(() => {

@@ -21,7 +21,6 @@ const ChatContainer = () => {
 
     const socket = getSocket();
     if (!socket) return;
-    // socket listener add karna ho to yahan kar sakte ho
   }, [selectedUser?._id, dispatch]);
 
   useEffect(() => {

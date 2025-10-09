@@ -20,12 +20,11 @@ export function initSocket(server) {
     if (userId) {
       userSocketMap[String(userId)] = socket.id;
 
-      // ✅ Jaise hi user connect ho turant broadcast karo
       io.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
 
     socket.on("disconnect", () => {
-      console.log("❌ A user disconnected:", socket.id);
+      console.log(" A user disconnected:", socket.id);
       if (userId) {
         delete userSocketMap[userId];
       }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSocket } from "../lib/socket";
-import { Image, Send, X, Mic, Square, Play } from "lucide-react"; 
+import { Image, Send, X, Mic, Square } from "lucide-react";
 import { sendMessage } from "../Store/slices/chatSlice";
 import { toast } from "react-toastify";
 
@@ -13,10 +13,6 @@ const MessagesInput = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recorder, setRecorder] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
-
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState("");
-  const audioRef = useRef(null);
 
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
@@ -100,18 +96,17 @@ const MessagesInput = () => {
     data.append("text", text.trim());
     if (media) data.append("media", media);
     if (mediaType === "audio" && audioUrl) {
-      data.append("duration", duration || "0:15");
+      data.append("duration", 10); // later calculate real duration
     }
 
     dispatch(sendMessage(data));
 
-    // reset all
+    // reset
     setMedia(null);
     setText("");
     setMediaPreview(null);
     setMediaType(null);
     setAudioUrl(null);
-    setDuration("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -132,88 +127,77 @@ const MessagesInput = () => {
     return () => socket.off("newMessage", handleNewMessage);
   }, [selectedUser?._id, dispatch]);
 
-  const formatDuration = (secs) => {
-    const minutes = Math.floor(secs / 60);
-    const seconds = Math.floor(secs % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  };
-
   return (
     <div className="p-4 w-full">
-      {(mediaPreview || audioUrl) && (
-        <div className="mb-3 flex items-center gap-2">
-          <div className="relative">
-            {mediaType === "image" ? (
-              <img
-                src={mediaPreview}
-                alt="Preview"
-                className="w-32 h-20 object-cover rounded-lg border border-gray-200"
-              />
-            ) : mediaType === "video" ? (
-              <video
-                src={mediaPreview}
-                className="w-32 h-20 object-cover rounded-lg border border-gray-700"
-                controls
-              />
-            ) : (
-            
-              <div className="flex items-center gap-3 bg-gray-100 border border-gray-300 rounded-xl px-3 py-2 w-[250px] shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (audioRef.current.paused) {
-                      audioRef.current.play();
-                    } else {
-                      audioRef.current.pause();
-                    }
-                  }}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white"
-                >
-                  {isPlaying ? <Square size={16} /> : <Play size={16} />}
-                </button>
-
-                {/* Fake Waveform */}
-                <div className="flex-1 flex items-center gap-[2px]">
-                  {[...Array(20)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-[2px] bg-blue-400 rounded"
-                      style={{ height: `${Math.random() * 18 + 5}px` }}
-                    />
-                  ))}
-                </div>
-
-                {/* Duration */}
-                <span className="text-xs text-gray-600">
-                  {duration || "0:15"}
-                </span>
-
-                {/* Hidden audio tag */}
-                <audio
-                  ref={audioRef}
-                  src={audioUrl}
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                  onEnded={() => setIsPlaying(false)}
-                  onLoadedMetadata={(e) =>
-                    setDuration(formatDuration(e.target.duration))
-                  }
-                  hidden
-                />
-              </div>
-            )}
+      {/* ✅ WhatsApp-style voice bubble (no bg color) */}
+      {audioUrl && (
+        <div className="mb-3 flex items-center justify-start gap-3">
+          <div className="flex items-center gap-3 border border-gray-300 rounded-full px-4 py-2 shadow-sm">
             <button
-              onClick={removeMedia}
-              type="button"
-              className="absolute -top-2 right-2 w-5 h-5 bg-zinc-800 text-white 
-              rounded-full flex items-center justify-center hover:bg-black"
+              className="w-8 h-8 flex items-center justify-center bg-blue-500 text-white rounded-full hover:bg-blue-600"
+              onClick={() => {
+                const audio = document.getElementById("voiceAudio");
+                audio.paused ? audio.play() : audio.pause();
+              }}
             >
-              <X className="w-3 h-3" />
+              ▶
             </button>
+
+            {/* waveform look */}
+            <div className="flex items-center gap-[2px]">
+              {[...Array(25)].map((_, i) => (
+                <div
+                  key={i}
+                  className="w-[2px] bg-blue-400 rounded-sm"
+                  style={{
+                    height: `${5 + Math.random() * 15}px`,
+                  }}
+                ></div>
+              ))}
+            </div>
+
+            <span className="text-xs text-gray-600">0:08</span>
           </div>
+
+          {/* delete icon */}
+          <button
+            onClick={removeMedia}
+            className="w-6 h-6 bg-gray-700 text-white rounded-full flex items-center justify-center hover:bg-black"
+          >
+            <X size={12} />
+          </button>
+
+          {/* hidden actual audio */}
+          <audio id="voiceAudio" src={audioUrl} preload="metadata"></audio>
         </div>
       )}
 
+      {/* image/video preview */}
+      {(mediaPreview && mediaType !== "audio") && (
+        <div className="mb-3 relative w-fit">
+          {mediaType === "image" ? (
+            <img
+              src={mediaPreview}
+              alt="Preview"
+              className="w-32 h-20 object-cover rounded-lg border border-gray-200"
+            />
+          ) : (
+            <video
+              src={mediaPreview}
+              className="w-32 h-20 object-cover rounded-lg border border-gray-700"
+              controls
+            />
+          )}
+          <button
+            onClick={removeMedia}
+            className="absolute -top-2 right-2 w-5 h-5 bg-zinc-800 text-white rounded-full flex items-center justify-center hover:bg-black"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
+      {/* Input */}
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
           <input
@@ -221,11 +205,10 @@ const MessagesInput = () => {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type a message..."
-            className="w-full px-4 py-2 
-             rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
           />
 
-          {/* Hidden file input */}
+          {/* hidden file input */}
           <input
             type="file"
             accept="image/*,video/*"
@@ -237,21 +220,18 @@ const MessagesInput = () => {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className={`flex items-center justify-center w-10 h-10 rounded-full 
-            border border-gray-300 hover:border-gray-400 transition ${
-              mediaPreview ? "text-emerald-500" : "text-gray-400"
-            }`}
+            className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 hover:border-gray-400 transition text-gray-400"
           >
             <Image size={20} />
           </button>
         </div>
 
+        {/* Mic button */}
         {isRecording ? (
           <button
             type="button"
             onClick={stopRecording}
-            className="w-10 h-10 flex items-center justify-center rounded-full 
-            bg-red-600 text-white hover:bg-red-700 transition"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 text-white hover:bg-red-700 transition"
           >
             <Square />
           </button>
@@ -259,19 +239,16 @@ const MessagesInput = () => {
           <button
             type="button"
             onClick={startRecording}
-            className="w-10 h-10 flex items-center justify-center rounded-full 
-            bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
           >
             <Mic />
           </button>
         )}
 
-        {/* 📨 Send Button */}
         <button
           type="submit"
           disabled={!text.trim() && !media && !audioUrl}
-          className="w-10 h-10 flex items-center justify-center rounded-full 
-          bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
         >
           <Send />
         </button>

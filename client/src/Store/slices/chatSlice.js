@@ -2,22 +2,21 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axios";
 import { toast } from "react-toastify";
 
-// 🔹 Get All Users
+
 export const getUsers = createAsyncThunk("chat/getUsers", async (_, thunkAPI) => {
   try {
     const res = await axiosInstance.get("/message/users");
-    return res.data.users; // ✅ users array
+    return res.data.users; 
   } catch (error) {
     toast.error(error.response?.data?.message || "Failed to load users");
     return thunkAPI.rejectWithValue(error.response?.data?.message);
   }
 });
 
-// 🔹 Get Messages with a user
 export const getMessages = createAsyncThunk("chat/getMessages", async (userId, thunkAPI) => {
   try {
     const res = await axiosInstance.get(`/message/${userId}`);
-    return res.data.messages; // ✅ messages array
+    return res.data.messages;
   } catch (error) {
     toast.error(error.response?.data?.message || "Failed to load messages");
     return thunkAPI.rejectWithValue(error.response?.data?.message);
@@ -61,10 +60,10 @@ const chatSlice = createSlice({
   reducers: {
     setSelectedUser: (state, action) => {
       state.selectedUser = action.payload;
-      state.messages = []; // ✅ reset messages when switching users
+      state.messages = []; 
     },
     pushNewMessage: (state, action) => {
-      state.messages.push(action.payload); // ✅ for socket real-time push
+      state.messages.push(action.payload); 
     },
   },
 
@@ -88,7 +87,7 @@ const chatSlice = createSlice({
         state.isMessagesLoading = true;
       })
       .addCase(getMessages.fulfilled, (state, action) => {
-        state.messages = action.payload; // ✅ full array of messages
+        state.messages = action.payload; 
         state.isMessagesLoading = false;
       })
       .addCase(getMessages.rejected, (state, action) => {
@@ -98,7 +97,7 @@ const chatSlice = createSlice({
 
       // 🔹 Send Message
       .addCase(sendMessage.fulfilled, (state, action) => {
-        state.messages.push(action.payload); // ✅ push new single message
+        state.messages.push(action.payload); 
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.error = action.payload;
