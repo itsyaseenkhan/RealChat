@@ -90,8 +90,8 @@ export const Signin = catchAsyncError(async(req,res,next) => {
     res.status(200).cookie("token", "", {
     expires: new Date(Date.now()),
     httpOnly: true,
-     sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
-      secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "strict",
+    secure: process.env.NODE_ENV === "production",
 })
     .json({
         success: true,
