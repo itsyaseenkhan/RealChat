@@ -1,17 +1,57 @@
+// import jwt from "jsonwebtoken";
+// import { User } from "../models/userModel.js";
+// import { catchAsyncError } from "./catchAsyncError.middleware.js";
+
+// export const isAuthenticated = catchAsyncError(async (req, res, next) => {
+//   const token = req.cookies.token;
+//   console.log("Cookies received:", req.cookies);
+
+//   if (!token) {
+//     return res.status(401).json({
+//       success: false,
+//       message: "User not Authenticated. Please Sign in!",
+//     });
+//   }
+
+//   let decoded;
+//   try {
+//     decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+//   } catch (err) {
+//     return res.status(401).json({
+//       success: false,
+//       message: "Invalid token or token expired, please sign in again",
+//     });
+//   }
+
+//   const user = await User.findById(decoded.id);
+//   if (!user) {
+//     return res.status(404).json({
+//       success: false,
+//       message: "User not found",
+//     });
+//   }
+
+//   req.user = user;
+//   next();
+// });
+
+
+
 import jwt from "jsonwebtoken";
 import { User } from "../models/userModel.js";
 import { catchAsyncError } from "./catchAsyncError.middleware.js";
 
 export const isAuthenticated = catchAsyncError(async (req, res, next) => {
-  const token = req.cookies.token;
-  console.log("Cookies received:", req.cookies);
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({
       success: false,
-      message: "User not Authenticated. Please Sign in!",
+      message: "No token provided",
     });
   }
+
+  const token = authHeader.split(" ")[1];
 
   let decoded;
   try {
@@ -19,7 +59,7 @@ export const isAuthenticated = catchAsyncError(async (req, res, next) => {
   } catch (err) {
     return res.status(401).json({
       success: false,
-      message: "Invalid token or token expired, please sign in again",
+      message: "Invalid or expired token, please sign in again",
     });
   }
 
@@ -34,3 +74,4 @@ export const isAuthenticated = catchAsyncError(async (req, res, next) => {
   req.user = user;
   next();
 });
+
