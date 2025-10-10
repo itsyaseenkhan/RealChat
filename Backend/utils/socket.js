@@ -1,4 +1,4 @@
-import { Server } from "socket.io"
+import { Server } from "socket.io";
 
 const userSocketMap = {};
 let io;
@@ -9,7 +9,7 @@ export function initSocket(server) {
     origin: process.env.FRONTEND_URL,
     credentials: true,
   },
-})
+});
 
 
   io.on("connection", (socket) => {
