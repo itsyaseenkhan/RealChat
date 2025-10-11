@@ -10,6 +10,6 @@ router.get("/Sign-out", isAuthenticated, Signout);
 router.get("/me", isAuthenticated, getUser);
 router.put("/update-Profile", isAuthenticated, updateProfile);
 router.post("/Password/forgot", forgotPassword);
-router.put("/Pasword/reset/:token", resetPassword);
+router.put("/Password/reset/:token", resetPassword);
 
 export default router;

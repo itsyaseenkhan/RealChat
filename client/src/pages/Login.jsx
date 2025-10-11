@@ -1,16 +1,15 @@
-import { Mail, Lock, MessageSquare, Eye, EyeOff, Loader2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link  } from "react-router-dom"; 
+import { Mail, Lock, MessageSquare, Eye, EyeOff, Loader2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { login } from "../Store/slices/authSlice";
-import AuthImagePattern from '../components/AuthImagePattern';
+import AuthImagePattern from "../components/AuthImagePattern";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ Email: "", password: "" });
-  const { isLoggingIn, authUser } = useSelector(state => state.auth);
+  const { isLoggingIn, authUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,19 +18,21 @@ const Login = () => {
 
   useEffect(() => {
     if (authUser) {
+      // e.g. navigate("/");
     }
-  }, [authUser]); 
+  }, [authUser]);
 
   return (
-    <div className='min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white'>
-      <div className='flex flex-col justify-center items-center px-6 py-12'>
-        <div className='w-full max-w-md'>
-          <div className='flex flex-col items-center text-center m-10'>
-            <div className='bg-blue-100 p-3 rounded-lg animate-bounce'>
-              <MessageSquare className='text-blue-600 w-7 h-7' />
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white">
+      {/* Left Section - Login Form */}
+      <div className="flex flex-col justify-center items-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <div className="flex flex-col items-center text-center m-10">
+            <div className="bg-blue-100 p-3 rounded-lg animate-bounce">
+              <MessageSquare className="text-blue-600 w-7 h-7" />
             </div>
-            <h1 className='text-2xl font-bold mt-4'>Welcome Back!</h1>
-            <p className='text-gray-500 text-sm mt-2'>
+            <h1 className="text-2xl font-bold mt-4">Welcome Back!</h1>
+            <p className="text-gray-500 text-sm mt-2">
               Sign in to Your Account
             </p>
           </div>
@@ -39,7 +40,9 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
                   <Mail className="w-5 h-5" />
@@ -58,7 +61,9 @@ const Login = () => {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
                   <Lock className="w-5 h-5" />
@@ -86,6 +91,16 @@ const Login = () => {
               </div>
             </div>
 
+            {/* Forgot Password Link */}
+            <div className="text-right">
+              <Link
+                to="/Password/forgot"
+                className="text-sm text-blue-600 hover:underline font-medium"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
             {/* Submit Button */}
             <button
               type="submit"
@@ -103,10 +118,10 @@ const Login = () => {
           </form>
 
           {/* Footer */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
             <p className="text-sm text-gray-500">
               Don&apos;t have an account?{" "}
-              <Link to="/Register" className="text-blue-600 hover:underline">
+              <Link to="/register" className="text-blue-600 hover:underline">
                 Create Account
               </Link>
             </p>
@@ -114,7 +129,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right Side Pattern */}
+      {/* Right Section */}
       <AuthImagePattern
         title={"Welcome Back!"}
         Subtitle={

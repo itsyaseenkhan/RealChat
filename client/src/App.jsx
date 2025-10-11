@@ -10,6 +10,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import ForgotPassword  from './pages/ForgetPassword';
+import  ResetPassword  from './pages/ResetPassword';
 
 const App = () => {
   const { authUser, isCheckingAuth } = useSelector((state) => state.auth);

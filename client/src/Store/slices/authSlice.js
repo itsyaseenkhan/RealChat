@@ -72,12 +72,9 @@ export const updateProfile = createAsyncThunk("user/updateProfile", async (data,
 
 
 // ✅ Forgot Password
-export const forgotPassword = createAsyncThunk(
-  "user/forgotPassword",
-  async (Email, ThunkAPI) => {
+export const forgotPassword = createAsyncThunk( "/user/Password/forgot",async (Email, ThunkAPI) => {
     try {
-      const res = await axiosInstance.post(
-        "/user/Password/forgot",
+      const res = await axiosInstance.post("/user/Password/forgot",
         { Email },
         { withCredentials: true }
       );
@@ -93,7 +90,7 @@ export const forgotPassword = createAsyncThunk(
 );
 
 
-export const resetPassword = createAsyncThunk( "user/resetPassword",
+export const resetPassword = createAsyncThunk( "/userPassword/reset",
   async ({ token, password, confirmPassword }, ThunkAPI) => {
     try {
       const res = await axiosInstance.put(`/user/Password/reset/${token}`,

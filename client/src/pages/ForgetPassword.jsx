@@ -10,7 +10,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const dispatch = useDispatch();
 
-  const { isForgottingPassword } = useSelector((state) => state.auth);
+  const { isForgotingPassword } = useSelector((state) => state.auth);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -65,10 +65,10 @@ const ForgotPassword = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isForgottingPassword}
+              disabled={isForgotingPassword}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition duration-200 flex justify-center items-center gap-2"
             >
-              {isForgottingPassword ? (
+              {isForgotingPassword ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" /> Sending...
                 </>
