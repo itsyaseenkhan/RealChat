@@ -1,8 +1,10 @@
 import {catchAsyncError} from "../middleware/catchAsyncError.middleware.js";
 import User from "../models/userModel.js";
 import { generateJWTToken } from "../utils/jwtToken.js";
+import { sendEmail } from "../utils/sendEmail.js";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
+
 
 export const Signup = catchAsyncError(async(req,res,next) => {
    const { FullName, Email, password } = req.body;
@@ -168,10 +170,78 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
   });
 });
 
-export const getAllUsers = catchAsyncError(async (req, res, next) => {
-  const users = await User.find().select("-password"); // password remove kardo
+
+
+
+export const forgotPassword = catchAsyncError(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new ErrorHandler("User Not Found!", 404));
+  }
+
+  const resetToken = user.getResetPasswordToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  const resetPasswordUrl = `${process.env.FRONTEND_URL}/Password/reset/${resetToken}`;
+
+  const message = `Your Reset Password Token is:\n\n ${resetPasswordUrl}\n\n If you did not request this, please ignore.`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: `Chats Dashboard Password Recovery`,
+      message,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: `Email sent to ${user.email} successfully`,
+    });
+  } catch (error) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+
+export const resetPassword = catchAsyncError(async (req, res, next) => {
+  const { token } = req.params;
+
+  const resetPasswordToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new ErrorHandler("Reset password token is invalid or has expired", 400));
+  }
+
+  const { password, confirmPassword } = req.body;
+
+  if (!password || !confirmPassword) {
+    return next(new ErrorHandler("Please enter password and confirm password", 400));
+  }
+
+  if (password !== confirmPassword) {
+    return next(new ErrorHandler("Password and confirm password do not match", 400));
+  }
+
+  user.Password = password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+
+  await user.save();
+
+  // ✅ No auto-login
   res.status(200).json({
     success: true,
-    users,
+    message: "Password reset successfully. Please login.",
   });
 });

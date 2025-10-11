@@ -49,6 +49,8 @@ const App = () => {
           <Route path="/register" element={!authUser ? <Register /> : <Navigate to="/" />} />
           <Route path="/login" element={!authUser ? <Login /> : <Navigate to="/" />} />
           <Route path="/profile" element={authUser ? <Profile /> : <Navigate to="/login" />} />
+          <Route path='/Password/forgot' element={!authUser ? <ForgotPassword /> : <Navigate to='/login' />} />
+          <Route path='/Pasword/reset/:token' element={!authUser ? <ResetPassword /> : <Navigate to='/login' />} />
         </Routes>
         <ToastContainer />
       </Router>

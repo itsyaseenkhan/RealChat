@@ -15,7 +15,9 @@ import mongoose from "mongoose";
         Avatar: {
          public_id: String,
          url: String,
-        },      
+        },    
+        resetPasswordToken: String,
+        resetPasswordExpire: Date,  
  }
  ,
  { timestamps: true }

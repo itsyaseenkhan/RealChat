@@ -70,7 +70,47 @@ export const updateProfile = createAsyncThunk("user/updateProfile", async (data,
    }
 })
 
-// ✅ Slice
+
+// ✅ Forgot Password
+export const forgotPassword = createAsyncThunk(
+  "user/forgotPassword",
+  async (Email, ThunkAPI) => {
+    try {
+      const res = await axiosInstance.post(
+        "/user/Password/forgot",
+        { Email },
+        { withCredentials: true }
+      );
+      toast.success(res.data.message || "Reset link sent to your email");
+      return res.data;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to send reset link");
+      return ThunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to send reset link"
+      );
+    }
+  }
+);
+
+
+export const resetPassword = createAsyncThunk( "user/resetPassword",
+  async ({ token, password, confirmPassword }, ThunkAPI) => {
+    try {
+      const res = await axiosInstance.put(`/user/Password/reset/${token}`,
+        { password, confirmPassword }, { withCredentials: true }
+      );
+      toast.success(res.data.message || "Password reset successfully");
+      return res.data;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Password reset failed");
+      return ThunkAPI.rejectWithValue(
+        error.response?.data?.message || "Password reset failed"
+      );
+    }
+  }
+);
+
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -78,6 +118,8 @@ const authSlice = createSlice({
     isSigningUp: false,
     isLoggingIn: false,
     isUpdatingProfile: false,
+    isForgotingPassword: false,
+    isResetingPassword: false,
     isCheckingAuth: true,
     onlineUsers: [],
   },
@@ -131,7 +173,25 @@ const authSlice = createSlice({
       .addCase(updateProfile.rejected, (state) => {
         state.isUpdatingProfile = false;
       })
-  },
+      .addCase(forgotPassword.pending, (state) =>{
+        state.isForgotingPassword = true;
+      })
+      .addCase(forgotPassword.fulfilled, (state,action)=>{
+         state.isForgotingPassword= false
+      }) 
+      .addCase(forgotPassword.rejected, (state) =>{
+        state.isForgotingPassword= false
+      })
+      .addCase(resetPassword.pending, (state)=>{
+        state.isResetingPassword = true;
+      })
+      .addCase(resetPassword.fulfilled, (state,action)=>{
+        state.isResetingPassword = false;
+      })
+      .addCase(resetPassword.rejected, (state)=>{
+        state.isResetingPassword = false
+      });
+    }
 });
 
 export const { setOnlineUsers } = authSlice.actions;

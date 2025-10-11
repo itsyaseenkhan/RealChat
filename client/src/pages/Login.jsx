@@ -27,8 +27,8 @@ const Login = () => {
       <div className='flex flex-col justify-center items-center px-6 py-12'>
         <div className='w-full max-w-md'>
           <div className='flex flex-col items-center text-center m-10'>
-            <div className='bg-blue-100 p-3 rounded-lg'>
-              <MessageSquare className='text-blue-600 w-6 h-6' />
+            <div className='bg-blue-100 p-3 rounded-lg animate-bounce'>
+              <MessageSquare className='text-blue-600 w-7 h-7' />
             </div>
             <h1 className='text-2xl font-bold mt-4'>Welcome Back!</h1>
             <p className='text-gray-500 text-sm mt-2'>
